@@ -3,283 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Movie Library</title>
+    <title>TitleTrack - My Entertainment Vault</title>
     <style>
         :root { 
-            --bg-color: #0a0a0a; 
-            --bg-surface: #121212;
+            --bg-base: #000000;          
+            --bg-surface: #1c1c1e;       
+            --bg-glass: rgba(0, 0, 0, 0.65);
             --text-main: #ffffff;
-            --text-sub: #b3b3b3;
-            --accent-color: #1db954; 
-            --accent-hover: #1ed760;
-            --card-hover-shadow: 0 12px 24px rgba(0,0,0,0.6);
-            --grid-columns: repeat(auto-fill, minmax(160px, 1fr));
+            --text-sub: #98989d;         
+            --accent-white: #ffffff;
+            --accent-spotify: #1ed760;
+            --grid-columns: repeat(auto-fill, minmax(150px, 1fr));
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-pill: 40px;
         }
 
         body { 
             margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Arial, sans-serif; 
-            background-color: var(--bg-color); 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Segoe UI", "Hiragino Kaku Gothic ProN", Arial, sans-serif; 
+            background-color: var(--bg-base); 
             color: var(--text-main); 
             -webkit-font-smoothing: antialiased;
         }
         
+        button, input, select, textarea { font-family: inherit; }
+
         header { 
-            padding: 15px 25px; 
-            background-color: rgba(10, 10, 10, 0.7); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
+            padding: 16px 24px; 
+            background-color: var(--bg-glass); 
+            backdrop-filter: blur(24px) saturate(180%); 
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
             position: sticky; top: 0; z-index: 100; 
-            border-bottom: 1px solid rgba(255,255,255,0.05); 
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; 
+            border-bottom: 1px solid rgba(255,255,255,0.08); 
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; 
         }
-        .logo-nav { display: flex; align-items: center; gap: 25px; }
-        h1 { margin: 0; font-size: 22px; font-weight: 800; cursor: pointer; color: var(--text-main); letter-spacing: -0.5px; }
-        .nav-btn { background: none; border: none; color: var(--text-sub); font-size: 15px; font-weight: 600; cursor: pointer; transition: color 0.2s; padding: 0; }
-        .nav-btn:hover, .nav-btn.active { color: var(--text-main); }
+        
+        .logo-nav { display: flex; align-items: center; gap: 32px; }
+        h1 { margin: 0; font-size: 22px; font-weight: 800; cursor: pointer; letter-spacing: -0.5px; color: var(--text-main); }
+        
+        .nav-pills { display: flex; gap: 4px; background: rgba(255,255,255,0.08); padding: 4px; border-radius: var(--radius-pill); }
+        .nav-btn { background: transparent; border: none; color: var(--text-sub); font-size: 13px; font-weight: 600; cursor: pointer; padding: 6px 16px; border-radius: var(--radius-pill); transition: 0.3s; }
+        .nav-btn:hover { color: var(--text-main); }
+        .nav-btn.active { background: var(--text-main); color: var(--bg-base); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
-        .header-controls { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .toggle-switch { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-sub); cursor: pointer; }
+        .header-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .toggle-switch { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-sub); cursor: pointer; }
         
-        .header-select { background-color: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; outline: none; cursor: pointer; transition: background 0.2s; }
-        .header-select:hover { background-color: rgba(255,255,255,0.2); }
-        
-        .add-btn { background-color: var(--text-main); color: var(--bg-color); border: none; border-radius: 24px; padding: 8px 20px; cursor: pointer; font-size: 14px; font-weight: 700; transition: transform 0.2s, background-color 0.2s; }
-        .add-btn:hover { background-color: #e0e0e0; transform: scale(1.04); }
-        
-        .controls-bar { 
-            padding: 15px 25px; 
-            background: linear-gradient(to bottom, rgba(18,18,18,1) 0%, rgba(10,10,10,1) 100%);
-            display: flex; gap: 12px; flex-wrap: wrap; align-items: center; 
-        }
-        .controls-bar select, .controls-bar input { 
-            background-color: rgba(255,255,255,0.08); color: white; border: 1px solid transparent; 
-            padding: 10px 16px; border-radius: 30px; font-size: 13px; outline: none; transition: 0.2s;
-        }
-        .controls-bar select:focus, .controls-bar input:focus { border-color: rgba(255,255,255,0.3); background-color: rgba(255,255,255,0.12); }
-        
-        /* ★ 修正ポイント：プルダウンの選択肢（option）の背景色と文字色を固定 */
-        select option {
-            background-color: #1a1a1a;
-            color: #ffffff;
-        }
+        .primary-btn { background-color: var(--text-main); color: var(--bg-base); border: none; border-radius: var(--radius-pill); padding: 8px 20px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .primary-btn:hover { transform: scale(1.04); background-color: #e5e5ea; }
+        .secondary-btn { background-color: rgba(255,255,255,0.1); color: var(--text-main); border: none; border-radius: var(--radius-pill); padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; backdrop-filter: blur(10px); }
+        .secondary-btn:hover { background-color: rgba(255,255,255,0.2); }
 
-        .grid-view { padding: 25px; display: grid; grid-template-columns: var(--grid-columns); gap: 25px 20px; }
-        .movie-card { cursor: pointer; display: flex; flex-direction: column; text-align: left; }
-        
-        .poster-wrapper {
-            position: relative; width: 100%; aspect-ratio: 2 / 3; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
-            margin-bottom: 12px; background-color: #222;
+        .controls-bar { padding: 16px 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .controls-bar input, .controls-bar select { 
+            background-color: var(--bg-surface); color: var(--text-main); border: 1px solid transparent; 
+            padding: 10px 16px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; outline: none; transition: 0.2s; 
         }
-        .movie-card:hover .poster-wrapper { transform: translateY(-8px); box-shadow: var(--card-hover-shadow); }
-        .movie-poster { width: 100%; height: 100%; object-fit: cover; }
+        .controls-bar input:focus, .controls-bar select:focus { border-color: rgba(255,255,255,0.2); background-color: #2c2c2e; }
+        select option { background-color: #1c1c1e; color: #ffffff; }
+
+        .grid-view { padding: 0 24px 40px 24px; display: grid; grid-template-columns: var(--grid-columns); gap: 32px 20px; }
+        .movie-card { cursor: pointer; display: flex; flex-direction: column; text-align: left; position: relative; background: transparent; padding: 0; }
+        .poster-wrapper { 
+            position: relative; width: 100%; aspect-ratio: 2 / 3; border-radius: var(--radius-md); overflow: hidden; 
+            background-color: var(--bg-surface); margin-bottom: 10px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4); 
+            transform: translateZ(0); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s;
+        }
+        .movie-poster { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+        .movie-card:hover .poster-wrapper { transform: translateY(-6px) scale(1.02); box-shadow: 0 12px 30px rgba(0,0,0,0.6); }
+        .movie-card:hover .movie-poster { transform: scale(1.05); }
         
-        .movie-title { font-size: 15px; font-weight: 700; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.3px; }
-        .movie-subtitle { font-size: 13px; font-weight: 500; color: var(--text-sub); margin: 0; }
-        
-        .playlist-cover { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background-color: #222; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.3s, box-shadow 0.3s; margin-bottom: 12px; }
-        .movie-card:hover .playlist-cover { transform: translateY(-8px); box-shadow: var(--card-hover-shadow); }
+        .movie-title { font-size: 14px; font-weight: 600; margin: 0 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.2px; }
+        .movie-subtitle { font-size: 12px; font-weight: 500; color: var(--text-sub); margin: 0; }
+        .media-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; backdrop-filter: blur(8px); z-index: 10; letter-spacing: 0.5px; }
+
+        .playlist-cover { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; width: 100%; aspect-ratio: 1; border-radius: var(--radius-md); overflow: hidden; background-color: var(--bg-surface); margin-bottom: 10px; transition: 0.4s; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        .movie-card:hover .playlist-cover { transform: translateY(-6px) scale(1.02); box-shadow: 0 12px 30px rgba(0,0,0,0.6); }
         .playlist-cover img { width: 100%; height: 100%; object-fit: cover; }
-        
+
         #detail-view { display: none; position: relative; padding-bottom: 80px; min-height: 100vh; }
         
-        .backdrop-container { position: absolute; top: 0; left: 0; width: 100%; height: 60vh; z-index: -1; overflow: hidden; }
-        .backdrop-img { width: 100%; height: 100%; background-size: cover; background-position: top center; opacity: 0.4; filter: blur(4px); transform: scale(1.05); }
-        .backdrop-gradient { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.8) 60%, rgba(10,10,10,1) 100%); }
+        .backdrop-container { position: absolute; top: 0; left: 0; width: 100%; height: 85vh; z-index: -1; }
+        .backdrop-img { width: 100%; height: 100%; background-size: cover; background-position: top center; opacity: 0.6; filter: blur(4px) saturate(120%); transform: scale(1.02); }
+        .backdrop-gradient { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 60%, rgba(0,0,0,1) 100%); }
         
-        .detail-inner { max-width: 1000px; margin: 0 auto; padding: 40px 30px; position: relative; z-index: 10; }
+        .detail-inner { max-width: 1000px; margin: 0 auto; padding: 40px 32px; position: relative; z-index: 10; }
         
-        .tagline { font-size: 26px; font-style: italic; font-weight: 700; text-align: center; margin: 0 0 50px 0; color: rgba(255,255,255,0.9); text-shadow: 0 2px 20px rgba(0,0,0,0.8); line-height: 1.4; letter-spacing: 1px; }
+        .detail-header { display: flex; gap: 48px; align-items: flex-end; padding-bottom: 40px; margin-top: 10vh; }
+        @media (max-width: 768px) { .detail-header { flex-direction: column; align-items: center; text-align: center; margin-top: 5vh; gap: 24px; } }
         
-        .detail-header { display: flex; gap: 40px; align-items: flex-end; padding-bottom: 30px; }
-        @media (max-width: 768px) { .detail-header { flex-direction: column; align-items: center; text-align: center; } }
+        .detail-poster-container { flex: 0 0 280px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+        .detail-poster-wrapper { width: 100%; aspect-ratio: 2/3; border-radius: 16px; overflow: hidden; box-shadow: 0 24px 50px rgba(0,0,0,0.8); }
+        .detail-poster-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
-        .detail-poster-container { flex: 0 0 260px; display: flex; flex-direction: column; gap: 12px; }
-        .detail-poster { width: 100%; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .poster-change-btn { background-color: rgba(255,255,255,0.1); border: none; color: var(--text-sub); border-radius: 20px; padding: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; backdrop-filter: blur(10px); }
-        .poster-change-btn:hover { background-color: rgba(255,255,255,0.2); color: white; }
+        .poster-change-txt { font-size: 11px; color: var(--text-sub); text-decoration: underline; cursor: pointer; transition: 0.2s; background: none; border: none; }
+        .poster-change-txt:hover { color: var(--text-main); }
         
-        .detail-info { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
-        .detail-type { font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; color: var(--text-sub); letter-spacing: 1px; }
-        .detail-title { font-size: 56px; font-weight: 900; margin: 0 0 20px 0; line-height: 1.1; letter-spacing: -1px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        @media (max-width: 768px) { .detail-title { font-size: 38px; } }
+        .detail-info { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; width: 100%; }
         
-        .detail-meta { font-size: 14px; font-weight: 500; color: #ccc; line-height: 1.8; }
-        .person-link { font-weight: 700; color: #fff; cursor: pointer; transition: color 0.2s; }
-        .person-link:hover { text-decoration: underline; color: var(--accent-hover); }
+        .hero-logo { max-width: 450px; max-height: 160px; object-fit: contain; margin-bottom: 16px; filter: drop-shadow(0 4px 15px rgba(0,0,0,0.8)); display: none; }
+        @media (max-width: 768px) { .hero-logo { margin: 0 auto 16px auto; } }
+        
+        .detail-title { font-size: 52px; font-weight: 900; margin: 0 0 12px 0; line-height: 1.1; letter-spacing: -1px; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+        .detail-meta { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 24px; }
         .meta-dot::before { content: " • "; margin: 0 8px; opacity: 0.4; }
         
-        .overview-text { font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.7; margin-top: 25px; font-weight: 400; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-        .overview-text:hover { -webkit-line-clamp: unset; } 
+        .main-actions { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
+        .play-trailer-btn { background-color: var(--text-main); color: var(--bg-base); border: none; border-radius: var(--radius-pill); padding: 12px 32px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 20px rgba(255,255,255,0.15); display: inline-flex; align-items: center; gap: 8px; }
+        .play-trailer-btn:hover { transform: scale(1.04); background-color: #e5e5ea; }
         
-        .action-bar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
-        .spotify-btn { background-color: var(--accent-color); color: black; border: none; border-radius: 30px; padding: 12px 28px; font-size: 15px; font-weight: 800; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: transform 0.2s, background-color 0.2s; }
-        .spotify-btn:hover { transform: scale(1.04); background-color: var(--accent-hover); }
-        .pl-add-btn { background-color: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; padding: 12px 24px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .pl-add-btn:hover { background-color: rgba(255,255,255,0.2); border-color: white; }
-        
-        .section-title { font-size: 22px; font-weight: 800; margin: 50px 0 20px 0; letter-spacing: -0.5px; }
-        .horizontal-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 20px; scroll-snap-type: x mandatory; }
-        .horizontal-scroll .movie-card { min-width: 150px; flex: 0 0 150px; scroll-snap-align: start; }
-        .horizontal-scroll::-webkit-scrollbar { height: 6px; }
-        .horizontal-scroll::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
-        
-        .editor-section { background-color: rgba(255,255,255,0.03); border-radius: 16px; padding: 30px; margin-top: 40px; border: 1px solid rgba(255,255,255,0.05); }
-        .rating-buttons { display: flex; gap: 15px; margin-bottom: 25px; }
-        .rate-btn { background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 30px; padding: 10px 24px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .rate-btn.active-good { background-color: var(--accent-color); color: black; border-color: var(--accent-color); }
-        .rate-btn.active-bad { background-color: #e22134; border-color: #e22134; }
-        
-        textarea { width: 100%; height: 140px; background-color: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 18px; font-size: 15px; line-height: 1.6; margin-bottom: 25px; box-sizing: border-box; outline: none; transition: border-color 0.2s; font-family: inherit; }
-        textarea:focus { border-color: rgba(255,255,255,0.5); }
-        
-        #search-view { display: none; padding: 30px 20px; }
-        .search-bar { display: flex; gap: 10px; margin: 0 auto 30px auto; max-width: 700px; flex-direction: column; }
-        .search-input-wrapper { display: flex; width: 100%; gap: 15px; }
-        .search-input { flex: 1; padding: 16px 24px; border-radius: 30px; border: none; background-color: rgba(255,255,255,0.1); color: white; font-size: 16px; font-weight: 500; outline: none; transition: 0.2s; }
-        .search-input:focus { background-color: rgba(255,255,255,0.15); box-shadow: 0 0 0 2px rgba(255,255,255,0.1); }
-        .search-btn { background-color: var(--text-main); color: var(--bg-color); border: none; border-radius: 30px; padding: 0 30px; font-size: 16px; font-weight: 800; cursor: pointer; transition: transform 0.2s; }
-        .search-btn:hover { transform: scale(1.04); }
-        
-        .do-add-btn { background-color: rgba(255,255,255,0.15); color: white; border: none; border-radius: 20px; padding: 8px 12px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.2s; backdrop-filter: blur(5px); }
-        .do-add-btn:hover { background-color: var(--text-main); color: var(--bg-color); }
-        .load-more-btn { background-color: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; padding: 12px 35px; font-weight: 700; cursor: pointer; margin: 30px auto; transition: 0.2s; display: none; }
-        .load-more-btn:hover { background-color: rgba(255,255,255,0.1); }
+        .icon-btn { background-color: rgba(255,255,255,0.1); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-pill); padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; backdrop-filter: blur(10px); }
+        .icon-btn:hover { background-color: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.3); transform: scale(1.04); }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background-color: #1a1a1a; padding: 30px; border-radius: 16px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; color: var(--text-sub); cursor: pointer; background: none; border: none; transition: 0.2s; }
+        .overview-text { font-size: 16px; color: rgba(255,255,255,0.9); line-height: 1.6; font-weight: 400; margin-bottom: 24px; text-shadow: 0 2px 10px rgba(0,0,0,0.6); }
+        
+        .keyword-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+        .tag { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.05); padding: 6px 14px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; color: #ccc; }
+
+        .section-title { font-size: 20px; font-weight: 800; margin: 40px 0 20px 0; letter-spacing: -0.5px; color: var(--text-main); }
+        
+        .cast-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 15px; scroll-snap-type: x mandatory; }
+        .cast-scroll::-webkit-scrollbar { display: none; }
+        .cast-item { flex: 0 0 90px; text-align: center; scroll-snap-align: start; cursor: pointer; }
+        .cast-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; background-color: var(--bg-surface); box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: 0.3s; }
+        .cast-item:hover .cast-img { transform: scale(1.05); filter: brightness(1.1); }
+        .cast-img.composer-hl { border: 2px solid var(--accent-spotify); }
+        .cast-name { font-size: 13px; font-weight: 600; line-height: 1.2; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .cast-role { font-size: 11px; color: var(--text-sub); }
+
+        .bonus-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 15px; scroll-snap-type: x mandatory; }
+        .bonus-scroll::-webkit-scrollbar { display: none; }
+        .bonus-item { flex: 0 0 280px; cursor: pointer; position: relative; border-radius: var(--radius-md); overflow: hidden; scroll-snap-align: start; }
+        .bonus-item img { width: 100%; aspect-ratio: 16/9; object-fit: cover; transition: 0.4s; }
+        .bonus-item:hover img { transform: scale(1.05); filter: brightness(0.6); }
+        .bonus-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: 700; color: white; opacity: 0.9; pointer-events: none; text-shadow: 0 4px 12px rgba(0,0,0,0.8); }
+        .bonus-title { font-size: 13px; padding: 12px; background: #1c1c1e; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+
+        .horizontal-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 20px; scroll-snap-type: x mandatory; }
+        .horizontal-scroll::-webkit-scrollbar { display: none; }
+        .horizontal-scroll .movie-card { min-width: 150px; flex: 0 0 150px; scroll-snap-align: start; }
+
+        .editor-section { background-color: var(--bg-surface); border-radius: 20px; padding: 32px; margin-top: 48px; }
+        .rating-pills { display: flex; gap: 12px; margin-bottom: 24px; }
+        .rate-pill { background-color: rgba(255,255,255,0.05); color: var(--text-sub); border: 1px solid transparent; border-radius: var(--radius-pill); padding: 10px 24px; font-weight: 700; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .rate-pill:hover { background-color: rgba(255,255,255,0.1); color: var(--text-main); }
+        .rate-pill.active-good { background-color: var(--text-main); color: var(--bg-base); }
+        .rate-pill.active-bad { background-color: #ff453a; color: #fff; }
+        
+        textarea { width: 100%; height: 120px; background-color: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); padding: 16px; font-size: 14px; margin-bottom: 24px; outline: none; transition: 0.2s; resize: vertical; }
+        textarea:focus { border-color: rgba(255,255,255,0.4); background-color: rgba(0,0,0,0.4); }
+
+        .editor-actions { display: flex; justify-content: space-between; align-items: center; }
+        .delete-txt { color: #ff453a; font-size: 13px; font-weight: 600; cursor: pointer; background: none; border: none; padding: 8px; transition: 0.2s; }
+        .delete-txt:hover { opacity: 0.7; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .modal-content { background-color: #1c1c1e; padding: 32px; border-radius: 24px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 24px 48px rgba(0,0,0,0.6); }
+        .modal-close { position: absolute; top: 20px; right: 24px; font-size: 24px; color: var(--text-sub); cursor: pointer; background: none; border: none; transition: 0.2s; z-index: 201; }
         .modal-close:hover { color: white; }
-        .poster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; margin-top: 20px; }
-        .poster-grid img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .poster-grid img:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(29,185,84,0.4); }
+        
+        .youtube-modal-content { padding: 0; max-width: 1000px; background: transparent; box-shadow: none; overflow: visible; width: 95%; }
+        .youtube-modal-content .modal-close { top: -48px; right: 0; color: white; font-size: 32px; }
+        .video-container { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 16px; overflow: hidden; background: #000; box-shadow: 0 24px 60px rgba(0,0,0,0.9); }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .fallback-link { display: block; text-align: right; margin-top: 12px; color: var(--text-sub); font-size: 13px; text-decoration: none; transition: 0.2s; }
+        .fallback-link:hover { color: white; text-decoration: underline; }
+
+        .poster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 16px; margin-top: 24px; }
+        .poster-grid img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: var(--radius-sm); cursor: pointer; transition: 0.2s; }
+        .poster-grid img:hover { transform: scale(1.05); box-shadow: 0 8px 24px rgba(0,0,0,0.6); border: 2px solid white; }
+
+        #search-view { display: none; padding: 40px 24px; }
+        .search-input-wrapper { display: flex; width: 100%; gap: 12px; max-width: 700px; margin: 0 auto 40px auto; }
+        .search-input { flex: 1; padding: 18px 24px; border-radius: var(--radius-pill); border: none; background-color: var(--bg-surface); color: white; font-size: 16px; outline: none; transition: 0.2s; }
+        .search-input:focus { background-color: #2c2c2e; box-shadow: 0 0 0 2px rgba(255,255,255,0.1); }
+        
+        .add-small-btn { background-color: rgba(255,255,255,0.1); color: white; border: none; border-radius: var(--radius-pill); padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 12px; transition: 0.2s; backdrop-filter: blur(5px); }
+        .add-small-btn:hover { background-color: var(--text-main); color: var(--bg-base); }
     </style>
 </head>
 <body>
     <header>
         <div class="logo-nav">
-            <h1 onclick="switchTab('library')">Movie Library</h1>
-            <button id="tab-lib" class="nav-btn active" onclick="switchTab('library')">ライブラリ</button>
-            <button id="tab-pl" class="nav-btn" onclick="switchTab('playlists')">プレイリスト</button>
+            <h1 onclick="switchTab('movie')">TitleTrack</h1>
+            <div class="nav-pills">
+                <button id="tab-movie" class="nav-btn active" onclick="switchTab('movie')">Movies</button>
+                <button id="tab-drama" class="nav-btn" onclick="switchTab('drama')">TV Shows</button>
+                <button id="tab-anime" class="nav-btn" onclick="switchTab('anime')">Anime</button>
+                <button id="tab-pl" class="nav-btn" onclick="switchTab('playlists')">Playlists</button>
+            </div>
         </div>
         <div class="header-controls">
-            <label class="toggle-switch">
-                <input type="checkbox" id="lang-toggle" onchange="renderCurrentView()"> 原題表示
-            </label>
-            <select id="column-select" class="header-select" onchange="handleColumnChange()">
-                <option value="auto">表示: 自動</option><option value="3">3列</option><option value="4">4列</option><option value="5">5列</option>
+            <label class="toggle-switch"><input type="checkbox" id="lang-toggle" onchange="renderCurrentView()"> 原題</label>
+            <select id="column-select" class="secondary-btn" style="padding: 6px 12px;" onchange="handleColumnChange()">
+                <option value="auto">Grid: Auto</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>
             </select>
-            <button class="add-btn" onclick="showSearch()">＋ 探す</button>
+            <button class="primary-btn" onclick="showSearch()">Search</button>
         </div>
     </header>
 
     <div id="library-controls" class="controls-bar">
-        <input type="text" id="library-search" placeholder="🔍 ライブラリ内検索..." oninput="renderLibrary()" style="flex:1; max-width:250px;">
-        <select id="type-filter" onchange="renderLibrary()">
-            <option value="all">すべての映画</option>
-            <option value="japanese">🇯🇵 邦画のみ</option>
-            <option value="masterpiece">🏆 名作 (高評価)</option>
-        </select>
+        <input type="text" id="library-search" placeholder="Filter library..." oninput="renderLibrary()" style="flex:1; max-width:280px;">
         <select id="sort-select" onchange="renderLibrary()">
-            <option value="added_desc">🕒 最近追加した順</option>
-            <option value="release_desc">📅 公開年（新しい順）</option>
-            <option value="release_asc">📅 公開年（古い順）</option>
-            <option value="director_asc">🎬 監督順</option>
+            <option value="added_desc">Recently Added</option>
+            <option value="release_desc">Release Date (New)</option>
+            <option value="release_asc">Release Date (Old)</option>
+            <option value="series_asc">Series / Title</option>
         </select>
     </div>
 
-    <!-- ライブラリ画面 -->
     <main id="library-view" class="grid-view"></main>
-
-    <!-- プレイリスト一覧画面 -->
     <main id="playlists-view" class="grid-view" style="display: none;"></main>
 
-    <!-- 検索画面 -->
     <main id="search-view">
-        <div class="search-bar">
-            <div class="search-input-wrapper">
-                <input type="text" id="search-input" class="search-input" placeholder="映画タイトル、人物名、または「1999」などの西暦..." onkeypress="handleKeyPress(event)">
-                <button class="search-btn" onclick="searchMovies()">検索</button>
-            </div>
+        <div class="search-input-wrapper">
+            <input type="text" id="search-input" class="search-input" placeholder="Movies, TV shows, actors, or year (e.g. 1999)..." onkeypress="handleKeyPress(event)">
+            <button class="primary-btn" style="padding: 0 32px; font-size: 16px;" onclick="searchMovies()">Search</button>
         </div>
         <div style="display:flex; flex-direction:column; align-items:center;">
             <div id="search-results" class="grid-view" style="padding:0; width:100%;"></div>
-            <button id="load-more-btn" class="load-more-btn" onclick="loadMoreMovies()">もっと見る ▼</button>
+            <button id="load-more-btn" class="secondary-btn" style="display:none; margin: 40px;" onclick="loadMoreMovies()">Load More</button>
         </div>
     </main>
 
-    <!-- 💎 リッチ詳細画面 -->
     <main id="detail-view">
-        <!-- 豪華な背景グラデーション -->
         <div class="backdrop-container">
             <div id="detail-backdrop" class="backdrop-img"></div>
             <div class="backdrop-gradient"></div>
         </div>
 
         <div class="detail-inner">
-            <button class="nav-btn" onclick="switchTab(currentTab)" style="margin-bottom: 20px;">← 戻る</button>
+            <button class="nav-btn" style="margin-bottom: 24px; padding:0; border:none;" onclick="switchTab(currentTab)">← Back to Library</button>
             
-            <div id="detail-tagline" class="tagline"></div>
-
             <div class="detail-header">
                 <div class="detail-poster-container">
-                    <div class="poster-wrapper" style="margin-bottom:0;">
-                        <img id="detail-img" class="movie-poster" src="" alt="Poster">
+                    <div class="detail-poster-wrapper">
+                        <img id="detail-img" src="" alt="Poster">
                     </div>
-                    <button class="poster-change-btn" onclick="openPosterModal()">🖼️ ポスター画像を変更</button>
+                    <button class="poster-change-txt" onclick="openPosterModal()">ポスター画像を変更</button>
                 </div>
                 
                 <div class="detail-info">
-                    <div class="detail-type">Movie</div>
-                    <h2 id="detail-title" class="detail-title">映画タイトル</h2>
+                    <img id="detail-title-logo" class="hero-logo" src="" alt="Logo">
+                    <h2 id="detail-title-text" class="detail-title">Title</h2>
+                    
                     <div id="detail-meta" class="detail-meta"></div>
                     
-                    <!-- ★ あらすじ表示 -->
-                    <div id="detail-overview" class="overview-text"></div>
-                    
-                    <div class="action-bar">
-                        <a id="spotify-link" href="#" target="_blank" class="spotify-btn">🎵 サントラを探す</a>
-                        <button class="pl-add-btn" onclick="openPlaylistModal()">＋ プレイリストに追加</button>
+                    <div class="main-actions">
+                        <button id="trailer-btn" class="play-trailer-btn" style="display:none;" onclick="openTrailerModal(currentTrailerKey)">Play Trailer</button>
+                        <a id="spotify-link" href="#" target="_blank" class="icon-btn">Soundtrack</a>
+                        <button class="icon-btn" onclick="openPlaylistModal()">Add to Playlist</button>
                     </div>
+
+                    <div id="detail-overview" class="overview-text"></div>
+                    <div id="detail-keywords" class="keyword-tags"></div>
                 </div>
             </div>
 
-            <!-- 編集エリア -->
+            <h3 class="section-title">Cast & Crew</h3>
+            <div id="cast-view" class="cast-scroll"></div>
+
+            <div id="bonus-section" style="display:none;">
+                <h3 class="section-title">Bonus Content</h3>
+                <div id="bonus-view" class="bonus-scroll"></div>
+            </div>
+
             <div class="editor-section">
-                <div class="rating-buttons">
-                    <button id="btn-good" class="rate-btn" onclick="setRating('good')">👍 いいね！</button>
-                    <button id="btn-bad" class="rate-btn" onclick="setRating('bad')">👎 いまいち</button>
+                <div class="rating-pills">
+                    <button id="btn-good" class="rate-pill" onclick="setRating('good')">Great</button>
+                    <button id="btn-bad" class="rate-pill" onclick="setRating('bad')">Not for me</button>
                 </div>
-                <textarea id="review-text" placeholder="あなただけの感想やメモを残す..."></textarea>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <button class="add-btn" onclick="saveReview()">保存する</button>
-                    <button class="nav-btn" onclick="deleteMovie()" style="text-decoration:underline;">ライブラリから削除</button>
+                <textarea id="review-text" placeholder="Add your personal notes or timestamps here..."></textarea>
+                <div class="editor-actions">
+                    <button class="primary-btn" onclick="saveReview()">Save Notes</button>
+                    <button class="delete-txt" onclick="deleteMovie()">Remove from Library</button>
                 </div>
             </div>
 
-            <h3 class="section-title">Fans also like</h3>
+            <h3 class="section-title">More Like This</h3>
             <div id="recommendations-view" class="horizontal-scroll"></div>
         </div>
     </main>
 
-    <!-- ポスター変更モーダル -->
+    <div id="trailer-modal" class="modal-overlay">
+        <div class="modal-content youtube-modal-content">
+            <button class="modal-close" onclick="closeTrailerModal()">×</button>
+            <div class="video-container">
+                <iframe id="yt-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <a id="yt-fallback-link" class="fallback-link" href="#" target="_blank">Watch on YouTube ↗</a>
+        </div>
+    </div>
+
     <div id="poster-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('poster-modal')">×</button>
-            <h3 style="margin-top:0;">ポスターを選択</h3>
+            <h3 style="margin-top:0; color: white;">Select a Poster</h3>
             <div id="poster-grid" class="poster-grid"></div>
         </div>
     </div>
 
-    <!-- プレイリスト追加・作成モーダル -->
     <div id="playlist-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('playlist-modal')">×</button>
-            <h3 style="margin-top:0;">プレイリストに追加</h3>
-            <div style="margin-bottom:20px; display:flex; gap:10px;">
-                <input type="text" id="new-pl-name" placeholder="新しいプレイリスト名" style="flex:1; padding:10px 15px; border-radius:30px; border:none; background:rgba(255,255,255,0.1); color:white; outline:none;">
-                <button class="add-btn" onclick="createNewPlaylist()">作成</button>
+            <h3 style="margin-top:0; color: white;">Add to Playlist</h3>
+            <div style="margin-bottom:24px; display:flex; gap:12px;">
+                <input type="text" id="new-pl-name" placeholder="New playlist name..." style="flex:1; padding:12px 16px; border-radius:24px; border:none; background:#2c2c2e; color:white; outline:none;">
+                <button class="primary-btn" onclick="createNewPlaylist()">Create</button>
             </div>
             <div id="pl-list" style="display:flex; flex-direction:column; gap:12px;"></div>
         </div>
@@ -289,328 +321,306 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // === Firebase設定 (入力済み) ===
         const firebaseConfig = {
-            apiKey: "AIzaSyDJiwYPBnlz8pRBLzcKaP6ehVxK8njQB-w",
-            authDomain: "movieee-ad303.firebaseapp.com",
-            projectId: "movieee-ad303",
-            storageBucket: "movieee-ad303.firebasestorage.app",
-            messagingSenderId: "222014089327",
-            appId: "1:222014089327:web:e2be3953a306fd56d2059a" 
+            apiKey: "AIzaSyDJiwYPBnlz8pRBLzcKaP6ehVxK8njQB-w", authDomain: "movieee-ad303.firebaseapp.com", projectId: "movieee-ad303", storageBucket: "movieee-ad303.firebasestorage.app", messagingSenderId: "222014089327", appId: "1:222014089327:web:e2be3953a306fd56d2059a" 
         };
         const TMDB_API_KEY = '13ced17918669e7e20cfdbcc172ad520'; 
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let myMovies = [];
-        let myPlaylists = [];
-        let currentMovieId = null;
-        let currentSearchQuery = '';
-        let currentPage = 1;
-        let totalPages = 1;
-        
-        window.currentTab = 'library'; 
+        let myMovies = []; let myPlaylists = []; let currentMovieId = null; let currentSearchQuery = ''; let currentPage = 1; let totalPages = 1; window.currentTrailerKey = null;
+        window.currentTab = 'movie'; 
 
-        // データ同期
         onSnapshot(collection(db, "movies"), (snapshot) => {
-            myMovies = [];
-            snapshot.forEach(doc => myMovies.push(doc.data()));
-            renderCurrentView();
-            if (currentMovieId && myMovies.find(m => m.id === currentMovieId)) showDetail(currentMovieId);
+            myMovies = []; snapshot.forEach(doc => myMovies.push(doc.data())); renderCurrentView();
         });
-
         onSnapshot(collection(db, "playlists"), (snapshot) => {
-            myPlaylists = [];
-            snapshot.forEach(doc => myPlaylists.push(doc.data()));
-            renderCurrentView();
+            myPlaylists = []; snapshot.forEach(doc => myPlaylists.push(doc.data())); renderCurrentView();
         });
 
         window.switchTab = (tab) => {
             currentTab = tab;
-            document.getElementById('tab-lib').classList.remove('active');
-            document.getElementById('tab-pl').classList.remove('active');
+            ['movie', 'drama', 'anime', 'pl'].forEach(t => document.getElementById(`tab-${t}`).classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
             
-            document.getElementById('detail-view').style.display = 'none';
-            document.getElementById('search-view').style.display = 'none';
-            document.getElementById('library-view').style.display = 'none';
-            document.getElementById('playlists-view').style.display = 'none';
-            document.getElementById('library-controls').style.display = 'none';
+            document.getElementById('detail-view').style.display = 'none'; document.getElementById('search-view').style.display = 'none';
+            document.getElementById('library-view').style.display = 'none'; document.getElementById('playlists-view').style.display = 'none';
             
-            if (tab === 'library') {
-                document.getElementById('tab-lib').classList.add('active');
+            if (tab === 'playlists') {
+                document.getElementById('library-controls').style.display = 'none';
+                document.getElementById('playlists-view').style.display = 'grid';
+                renderPlaylists();
+            } else {
                 document.getElementById('library-controls').style.display = 'flex';
                 document.getElementById('library-view').style.display = 'grid';
                 renderLibrary();
-            } else if (tab === 'playlists') {
-                document.getElementById('tab-pl').classList.add('active');
-                document.getElementById('playlists-view').style.display = 'grid';
-                renderPlaylists();
             }
         };
 
-        window.renderCurrentView = () => { if (currentTab === 'library') renderLibrary(); else if (currentTab === 'playlists') renderPlaylists(); };
-
-        window.handleColumnChange = () => {
-            const cols = document.getElementById('column-select').value;
-            document.documentElement.style.setProperty('--grid-columns', cols === 'auto' ? 'repeat(auto-fill, minmax(160px, 1fr))' : `repeat(${cols}, 1fr)`);
-        };
+        window.renderCurrentView = () => { if (currentTab === 'playlists') renderPlaylists(); else renderLibrary(); };
+        window.handleColumnChange = () => { const cols = document.getElementById('column-select').value; document.documentElement.style.setProperty('--grid-columns', cols === 'auto' ? 'repeat(auto-fill, minmax(150px, 1fr))' : `repeat(${cols}, 1fr)`); };
 
         window.renderLibrary = (filterPlaylistId = null) => {
-            const libraryView = document.getElementById('library-view');
-            libraryView.innerHTML = ''; 
+            const libraryView = document.getElementById('library-view'); libraryView.innerHTML = ''; 
+            let displayMovies = myMovies; const useOriginalTitle = document.getElementById('lang-toggle').checked;
             
-            let displayMovies = myMovies;
-            const useOriginalTitle = document.getElementById('lang-toggle').checked;
-            
-            if (filterPlaylistId) {
-                displayMovies = displayMovies.filter(m => m.playlistIds && m.playlistIds.includes(filterPlaylistId));
-                document.getElementById('library-controls').style.display = 'none';
+            if (filterPlaylistId) { 
+                displayMovies = displayMovies.filter(m => m.playlistIds && m.playlistIds.includes(filterPlaylistId)); 
+                document.getElementById('library-controls').style.display = 'none'; 
             } else {
-                const q = document.getElementById('library-search').value.toLowerCase();
-                const type = document.getElementById('type-filter').value;
-                const sort = document.getElementById('sort-select').value;
-                
-                if (q) displayMovies = displayMovies.filter(m => (m.title||'').toLowerCase().includes(q) || (m.originalTitle||'').toLowerCase().includes(q) || (m.director||'').toLowerCase().includes(q));
-                
-                if (type === 'japanese') displayMovies = displayMovies.filter(m => m.isJapanese);
-                if (type === 'masterpiece') displayMovies = displayMovies.filter(m => m.voteAverage >= 7.5);
+                if (currentTab === 'movie') displayMovies = displayMovies.filter(m => !m.mediaType || m.mediaType === 'movie');
+                if (currentTab === 'drama') displayMovies = displayMovies.filter(m => m.mediaType === 'tv' && !m.isAnime);
+                if (currentTab === 'anime') displayMovies = displayMovies.filter(m => m.mediaType === 'tv' && m.isAnime);
+
+                const q = document.getElementById('library-search').value.toLowerCase(); const sort = document.getElementById('sort-select').value;
+                if (q) displayMovies = displayMovies.filter(m => (m.title||'').toLowerCase().includes(q) || (m.originalTitle||'').toLowerCase().includes(q));
 
                 displayMovies.sort((a, b) => {
                     if (sort === 'added_desc') return (b.addedAt || 0) - (a.addedAt || 0);
                     if (sort === 'release_desc') return (b.releaseDate || '0000').localeCompare(a.releaseDate || '0000');
                     if (sort === 'release_asc') return (a.releaseDate || '9999').localeCompare(b.releaseDate || '9999');
-                    if (sort === 'director_asc') return (a.director || '').localeCompare(b.director || '', 'ja');
+                    if (sort === 'series_asc') {
+                        const comp = (a.collectionName || a.title).localeCompare(b.collectionName || b.title, 'ja');
+                        if (comp !== 0) return comp;
+                        return (a.releaseDate || '').localeCompare(b.releaseDate || '');
+                    }
                     return 0;
                 });
             }
 
-            if (displayMovies.length === 0) {
-                libraryView.innerHTML = '<p style="color: var(--text-sub);">映画がありません。</p>';
-                return;
-            }
-            
+            if (displayMovies.length === 0) { libraryView.innerHTML = '<p style="color: var(--text-sub);">Empty.</p>'; return; }
             displayMovies.forEach(movie => {
                 const titleToUse = useOriginalTitle && movie.originalTitle ? movie.originalTitle : movie.title;
                 const year = movie.releaseDate ? movie.releaseDate.substring(0, 4) : '';
-                const card = document.createElement('div');
-                card.className = 'movie-card';
-                card.onclick = () => showDetail(movie.id);
-                card.innerHTML = `
-                    <div class="poster-wrapper"><img class="movie-poster" src="${movie.posterUrl}" loading="lazy"></div>
-                    <p class="movie-title">${titleToUse}</p>
-                    <p class="movie-subtitle">${year} ${movie.director && movie.director !== '不明' ? `• ${movie.director}` : ''}</p>
-                `;
+                const card = document.createElement('div'); card.className = 'movie-card'; card.onclick = () => showDetail(movie.id);
+                let badge = ''; if(movie.mediaType === 'tv') badge = `<div class="media-badge">${movie.isAnime ? 'ANIME' : 'TV'}</div>`;
+                
+                card.innerHTML = `<div class="poster-wrapper">${badge}<img class="movie-poster" src="${movie.posterUrl}" loading="lazy"></div><p class="movie-title">${titleToUse}</p><p class="movie-subtitle">${year}</p>`;
                 libraryView.appendChild(card);
             });
         };
 
         window.renderPlaylists = () => {
-            const plView = document.getElementById('playlists-view');
-            plView.innerHTML = '';
-            
+            const plView = document.getElementById('playlists-view'); plView.innerHTML = '';
             myPlaylists.sort((a,b) => b.createdAt - a.createdAt).forEach(pl => {
                 const moviesInPl = myMovies.filter(m => m.playlistIds && m.playlistIds.includes(pl.id));
                 const posters = moviesInPl.slice(0, 4).map(m => m.posterUrl);
                 while(posters.length < 4) posters.push('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'); 
-                
-                const card = document.createElement('div');
-                card.className = 'movie-card';
-                card.onclick = () => {
-                    document.getElementById('playlists-view').style.display = 'none';
-                    document.getElementById('library-view').style.display = 'grid';
-                    renderLibrary(pl.id); 
-                };
-                card.innerHTML = `
-                    <div class="playlist-cover">
-                        <img src="${posters[0]}"><img src="${posters[1]}"><img src="${posters[2]}"><img src="${posters[3]}">
-                    </div>
-                    <p class="movie-title">${pl.name}</p>
-                    <p class="movie-subtitle">${moviesInPl.length} 本の映画</p>
-                `;
+                const card = document.createElement('div'); card.className = 'movie-card';
+                card.onclick = () => { document.getElementById('playlists-view').style.display = 'none'; document.getElementById('library-view').style.display = 'grid'; renderLibrary(pl.id); };
+                card.innerHTML = `<div class="playlist-cover"><img src="${posters[0]}"><img src="${posters[1]}"><img src="${posters[2]}"><img src="${posters[3]}"></div><p class="movie-title">${pl.name}</p><p class="movie-subtitle">${moviesInPl.length} items</p>`;
                 plView.appendChild(card);
             });
         };
 
         window.showSearch = () => {
-            document.getElementById('library-view').style.display = 'none';
-            document.getElementById('playlists-view').style.display = 'none';
-            document.getElementById('library-controls').style.display = 'none';
-            document.getElementById('detail-view').style.display = 'none';
-            document.getElementById('search-view').style.display = 'block';
-            document.getElementById('search-input').focus();
+            document.getElementById('library-view').style.display = 'none'; document.getElementById('playlists-view').style.display = 'none'; document.getElementById('library-controls').style.display = 'none'; document.getElementById('detail-view').style.display = 'none'; document.getElementById('search-view').style.display = 'block'; document.getElementById('search-input').focus();
         };
 
         window.handleKeyPress = (e) => { if (e.key === 'Enter') searchMovies(); };
         
         window.searchMovies = async () => {
-            const query = document.getElementById('search-input').value.trim();
-            if (!query) return;
-            currentSearchQuery = query;
-            currentPage = 1;
-            document.getElementById('search-results').innerHTML = '<p style="color:var(--text-sub);">検索中...</p>'; 
-            document.getElementById('load-more-btn').style.display = 'none';
-
+            const query = document.getElementById('search-input').value.trim(); if (!query) return; currentSearchQuery = query; currentPage = 1; document.getElementById('search-results').innerHTML = '<p style="color:var(--text-sub);">Searching...</p>'; document.getElementById('load-more-btn').style.display = 'none';
             try {
                 let combinedResults = [];
                 if (/^\d{4}$/.test(query)) {
-                    const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=ja-JP&primary_release_year=${query}&sort_by=popularity.desc&page=1`);
-                    const data = await res.json();
-                    totalPages = data.total_pages;
-                    combinedResults = data.results;
+                    const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=ja-JP&primary_release_year=${query}&sort_by=popularity.desc&page=1`); const data = await res.json(); totalPages = data.total_pages; combinedResults = data.results.map(m=>({...m, media_type: 'movie'}));
                 } else {
-                    const movieRes = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&language=ja-JP&query=${encodeURIComponent(query)}&page=1`);
-                    const movieData = await movieRes.json();
-                    totalPages = movieData.total_pages;
-
-                    const personRes = await fetch(`https://api.themoviedb.org/3/search/person?api_key=${TMDB_API_KEY}&language=ja-JP&query=${encodeURIComponent(query)}`);
-                    const personData = await personRes.json();
-                    let personMovies = [];
-                    if (personData.results.length > 0) {
-                        const personId = personData.results[0].id; 
-                        const creditsRes = await fetch(`https://api.themoviedb.org/3/person/${personId}/movie_credits?api_key=${TMDB_API_KEY}&language=ja-JP`);
-                        const creditsData = await creditsRes.json();
-                        if(creditsData.crew) personMovies = personMovies.concat(creditsData.crew.filter(m => m.job === 'Director'));
-                        if(creditsData.cast) personMovies = personMovies.concat(creditsData.cast);
+                    const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&language=ja-JP&query=${encodeURIComponent(query)}&page=1`);
+                    const data = await res.json(); totalPages = data.total_pages;
+                    
+                    for (let item of data.results) {
+                        if (item.media_type === 'movie' || item.media_type === 'tv') combinedResults.push(item);
+                        if (item.media_type === 'person') {
+                            const pRes = await fetch(`https://api.themoviedb.org/3/person/${item.id}/combined_credits?api_key=${TMDB_API_KEY}&language=ja-JP`);
+                            const pData = await pRes.json();
+                            if(pData.cast) combinedResults = combinedResults.concat(pData.cast);
+                            if(pData.crew) combinedResults = combinedResults.concat(pData.crew.filter(c => c.job === 'Director'));
+                        }
                     }
-                    const map = new Map();
-                    personMovies.sort((a,b) => (b.release_date||"").localeCompare(a.release_date||"")).forEach(m => { if(!map.has(m.id)) map.set(m.id, m); });
-                    movieData.results.forEach(m => { if(!map.has(m.id)) map.set(m.id, m); });
-                    combinedResults = Array.from(map.values());
+                    const map = new Map(); combinedResults.sort((a,b) => ((b.release_date || b.first_air_date ||"").localeCompare(a.release_date || a.first_air_date ||""))).forEach(m => { if(!map.has(m.id)) map.set(m.id, m); }); combinedResults = Array.from(map.values());
                 }
-                
-                document.getElementById('search-results').innerHTML = ''; 
-                renderSearchResults(combinedResults, false);
-            } catch (error) { alert('検索に失敗しました。'); }
+                document.getElementById('search-results').innerHTML = ''; renderSearchResults(combinedResults, false);
+            } catch (error) { alert('Failed to search.'); }
         };
 
         window.loadMoreMovies = async () => {
-            if (currentPage >= totalPages) return;
-            currentPage++; 
+            if (currentPage >= totalPages) return; currentPage++; 
             try {
-                let res;
-                if (/^\d{4}$/.test(currentSearchQuery)) {
-                    res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=ja-JP&primary_release_year=${currentSearchQuery}&sort_by=popularity.desc&page=${currentPage}`);
-                } else {
-                    res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&language=ja-JP&query=${encodeURIComponent(currentSearchQuery)}&page=${currentPage}`);
-                }
-                const data = await res.json();
-                renderSearchResults(data.results, true);
-            } catch (error) { alert('追加読み込みに失敗しました。'); }
+                let res; if (/^\d{4}$/.test(currentSearchQuery)) { res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=ja-JP&primary_release_year=${currentSearchQuery}&sort_by=popularity.desc&page=${currentPage}`); } else { res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&language=ja-JP&query=${encodeURIComponent(currentSearchQuery)}&page=${currentPage}`); }
+                const data = await res.json(); renderSearchResults(data.results.filter(i=>i.media_type!=='person'), true);
+            } catch (error) { alert('Failed to load more.'); }
         };
 
         function renderSearchResults(results, append = false) {
-            const container = document.getElementById('search-results');
-            const btn = document.getElementById('load-more-btn');
-            if (results.length === 0 && !append) { container.innerHTML = '<p style="color:var(--text-sub);">見つかりませんでした。</p>'; btn.style.display = 'none'; return; }
-            
-            results.forEach(movie => {
-                const posterUrl = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image';
-                const card = document.createElement('div');
-                card.className = 'movie-card';
-                card.innerHTML = `
-                    <div class="poster-wrapper" style="margin-bottom:8px;"><img class="movie-poster" src="${posterUrl}" loading="lazy"></div>
-                    <p class="movie-title">${movie.title}</p>
-                    <p class="movie-subtitle">${movie.release_date ? movie.release_date.substring(0,4) : ''}</p>
-                `;
-                const addBtn = document.createElement('button');
-                addBtn.className = 'do-add-btn'; addBtn.textContent = '＋ 追加';
-                addBtn.onclick = () => addMovieToLibrary(movie.id);
-                card.appendChild(addBtn); container.appendChild(card);
+            const container = document.getElementById('search-results'); const btn = document.getElementById('load-more-btn');
+            if (results.length === 0 && !append) { container.innerHTML = '<p style="color:var(--text-sub);">No results found.</p>'; btn.style.display = 'none'; return; }
+            results.forEach(item => {
+                const title = item.title || item.name;
+                const date = item.release_date || item.first_air_date;
+                const mType = item.media_type || 'movie'; 
+                const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image'; 
+                
+                const isAnime = mType === 'tv' && item.original_language === 'ja' && item.genre_ids?.includes(16);
+                let badge = ''; if(mType === 'tv') badge = `<div class="media-badge">${isAnime ? 'ANIME' : 'TV'}</div>`;
+                
+                const card = document.createElement('div'); card.className = 'movie-card';
+                card.innerHTML = `<div class="poster-wrapper">${badge}<img class="movie-poster" src="${posterUrl}" loading="lazy"></div><p class="movie-title">${title}</p><p class="movie-subtitle">${date ? date.substring(0,4) : ''}</p>`;
+                const addBtn = document.createElement('button'); addBtn.className = 'add-small-btn'; addBtn.textContent = '+ Add'; addBtn.onclick = () => addMovieToLibrary(item.id, mType); card.appendChild(addBtn); container.appendChild(card);
             });
             btn.style.display = currentPage < totalPages ? 'block' : 'none';
         }
 
-        window.addMovieToLibrary = async (id) => {
-            if (myMovies.find(m => m.id === id)) { alert('登録済みです！'); return; }
+        window.addMovieToLibrary = async (id, mType) => {
+            if (myMovies.find(m => m.id === id)) { alert('Already in library!'); return; }
             try {
-                const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=ja-JP&append_to_response=credits`);
-                const data = await res.json();
+                const endpoint = mType === 'tv' ? 'tv' : 'movie';
+                const res = await fetch(`https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${TMDB_API_KEY}&language=ja-JP`); const data = await res.json();
                 
-                const posterUrl = data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image';
-                const backdropUrl = data.backdrop_path ? `https://image.tmdb.org/t/p/w1280${data.backdrop_path}` : '';
-                const dir = data.credits?.crew?.find(c => c.job === 'Director');
-                const castList = data.credits?.cast ? data.credits.cast.slice(0, 5).map(c => c.name) : [];
-                const isJp = data.original_language === 'ja' || (data.production_countries && data.production_countries.some(c => c.iso_3166_1 === 'JP'));
+                const title = data.title || data.name;
+                const origTitle = data.original_title || data.original_name;
+                const date = data.release_date || data.first_air_date;
+                const isAnime = mType === 'tv' && data.original_language === 'ja' && data.genres?.some(g => g.id === 16);
+                const posterUrl = data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image'; 
 
-                await setDoc(doc(db, "movies", String(id)), {
-                    id: id, title: data.title, originalTitle: data.original_title || data.title,
-                    posterUrl: posterUrl, backdropUrl: backdropUrl, tagline: data.tagline || '',
-                    overview: data.overview || '',
-                    review: "", rating: null, addedAt: Date.now(), releaseDate: data.release_date || "9999-99-99",
-                    director: dir ? dir.name : '不明', cast: castList, isJapanese: isJp, voteAverage: data.vote_average || 0,
-                    playlistIds: []
+                await setDoc(doc(db, "movies", String(id)), { 
+                    id: id, mediaType: mType, isAnime: isAnime,
+                    title: title, originalTitle: origTitle, releaseDate: date || "9999-99-99",
+                    posterUrl: posterUrl, 
+                    review: "", rating: null, addedAt: Date.now(), playlistIds: [],
+                    collectionName: data.belongs_to_collection ? data.belongs_to_collection.name : null
                 });
-                alert(`「${data.title}」を追加しました！`);
-            } catch (error) { alert('失敗しました。'); }
+                alert(`Added "${title}"`);
+            } catch (error) { alert('Failed to add.'); }
         };
 
         window.showDetail = async (id) => {
-            const movie = myMovies.find(m => m.id === id);
-            if (!movie) return;
-            currentMovieId = id;
-            const useOrig = document.getElementById('lang-toggle').checked;
-            const titleToUse = useOrig && movie.originalTitle ? movie.originalTitle : movie.title;
-
-            document.getElementById('detail-backdrop').style.backgroundImage = movie.backdropUrl ? `url('${movie.backdropUrl}')` : '';
-            document.getElementById('detail-tagline').textContent = movie.tagline ? `"${movie.tagline}"` : '';
-
+            const movie = myMovies.find(m => m.id === id); if (!movie) return; currentMovieId = id;
+            
+            document.getElementById('library-view').style.display = 'none'; document.getElementById('playlists-view').style.display = 'none'; document.getElementById('library-controls').style.display = 'none'; document.getElementById('search-view').style.display = 'none'; document.getElementById('detail-view').style.display = 'block'; window.scrollTo(0, 0);
+            
             document.getElementById('detail-img').src = movie.posterUrl;
-            document.getElementById('detail-title').textContent = titleToUse;
-            
-            document.getElementById('detail-overview').textContent = movie.overview || 'あらすじ情報がありません。';
-
             document.getElementById('review-text').value = movie.review || "";
+            document.getElementById('btn-good').className = `rate-pill ${movie.rating === 'good' ? 'active-good' : ''}`; 
+            document.getElementById('btn-bad').className = `rate-pill ${movie.rating === 'bad' ? 'active-bad' : ''}`;
+
+            document.getElementById('detail-backdrop').style.backgroundImage = '';
+            document.getElementById('detail-title-logo').style.display = 'none'; document.getElementById('detail-title-text').style.display = 'block'; document.getElementById('detail-title-text').textContent = "Loading...";
+            document.getElementById('detail-meta').innerHTML = ''; document.getElementById('detail-overview').textContent = ''; document.getElementById('detail-keywords').innerHTML = '';
+            document.getElementById('cast-view').innerHTML = ''; document.getElementById('bonus-view').innerHTML = ''; document.getElementById('bonus-section').style.display = 'none';
+            document.getElementById('trailer-btn').style.display = 'none';
+
+            const mType = movie.mediaType || 'movie';
+            const res = await fetch(`https://api.themoviedb.org/3/${mType}/${id}?api_key=${TMDB_API_KEY}&language=ja-JP&append_to_response=images,videos,credits,keywords,recommendations&include_image_language=ja,en,null`);
+            const data = await res.json();
+
+            const title = data.title || data.name;
+            const origTitle = data.original_title || data.original_name;
+            const date = data.release_date || data.first_air_date;
+            const useOrig = document.getElementById('lang-toggle').checked;
             
-            const year = movie.releaseDate ? movie.releaseDate.substring(0, 4) : '';
-            let metaHtml = `<span>${year}</span>`;
-            if (movie.director && movie.director !== '不明') metaHtml += `<span class="meta-dot"></span>監督: <span class="person-link" onclick="searchFromLink('${movie.director}')">${movie.director}</span>`;
-            if (movie.cast && movie.cast.length > 0) metaHtml += `<br><span style="margin-top:10px; display:inline-block;">出演: ${movie.cast.map(c => `<span class="person-link" onclick="searchFromLink('${c}')">${c}</span>`).join(', ')}</span>`;
+            if (data.backdrop_path) document.getElementById('detail-backdrop').style.backgroundImage = `url('https://image.tmdb.org/t/p/w1280${data.backdrop_path}')`;
+            
+            const logos = data.images?.logos;
+            const bestLogo = logos?.find(l => l.iso_639_1 === 'ja') || logos?.find(l => l.iso_639_1 === 'en') || logos?.[0];
+            if (bestLogo && !useOrig) {
+                document.getElementById('detail-title-logo').src = `https://image.tmdb.org/t/p/w500${bestLogo.file_path}`;
+                document.getElementById('detail-title-logo').style.display = 'block';
+                document.getElementById('detail-title-text').style.display = 'none';
+            } else {
+                document.getElementById('detail-title-text').textContent = useOrig ? origTitle : title;
+            }
+
+            const runtime = data.runtime || (data.episode_run_time && data.episode_run_time[0]);
+            let metaHtml = `<span>${date ? date.substring(0,4) : ''}</span>`;
+            if (mType === 'tv') metaHtml += `<span class="meta-dot"></span><span>${data.number_of_seasons} Seasons</span>`;
+            if (runtime) metaHtml += `<span class="meta-dot"></span><span>${runtime} min</span>`;
+            if (data.vote_average) metaHtml += `<span class="meta-dot"></span><span>Score ${(data.vote_average).toFixed(1)}</span>`;
             document.getElementById('detail-meta').innerHTML = metaHtml;
+            document.getElementById('detail-overview').textContent = data.overview || '';
 
-            document.getElementById('spotify-link').href = `https://open.spotify.com/search/${encodeURIComponent(movie.originalTitle + ' soundtrack')}`;
+            document.getElementById('spotify-link').href = `https://open.spotify.com/search/${encodeURIComponent(origTitle + ' soundtrack')}`;
 
-            document.getElementById('btn-good').className = `rate-btn ${movie.rating === 'good' ? 'active-good' : ''}`;
-            document.getElementById('btn-bad').className = `rate-btn ${movie.rating === 'bad' ? 'active-bad' : ''}`;
+            const kws = data.keywords?.keywords || data.keywords?.results || [];
+            const kwContainer = document.getElementById('detail-keywords');
+            kws.slice(0, 10).forEach(kw => {
+                const span = document.createElement('span'); span.className = 'tag'; span.textContent = `#${kw.name}`; kwContainer.appendChild(span);
+            });
+
+            const castContainer = document.getElementById('cast-view');
+            const composer = data.credits?.crew?.find(c => c.job === 'Original Music Composer' || c.department === 'Sound' && (c.job === 'Music' || c.job === 'Theme Song Performance'));
+            if (composer) {
+                const img = composer.profile_path ? `https://image.tmdb.org/t/p/w185${composer.profile_path}` : 'https://via.placeholder.com/185?text=Music';
+                const div = document.createElement('div'); div.className = 'cast-item';
+                div.innerHTML = `<img class="cast-img composer-hl" src="${img}"><div class="cast-name">${composer.name}</div><div class="cast-role">Music</div>`;
+                div.onclick = () => searchFromLink(composer.name);
+                castContainer.appendChild(div);
+            }
+
+            if(data.credits?.cast) {
+                data.credits.cast.slice(0, 15).forEach(c => {
+                    const img = c.profile_path ? `https://image.tmdb.org/t/p/w185${c.profile_path}` : 'https://via.placeholder.com/185?text=No+Photo';
+                    const div = document.createElement('div'); div.className = 'cast-item';
+                    div.innerHTML = `<img class="cast-img" src="${img}" loading="lazy"><div class="cast-name">${c.name}</div><div class="cast-role">${c.character}</div>`;
+                    div.onclick = () => searchFromLink(c.name);
+                    castContainer.appendChild(div);
+                });
+            }
+
+            currentTrailerKey = null;
+            let enVideos = [];
+            if(data.videos?.results?.length === 0) { 
+                const enRes = await fetch(`https://api.themoviedb.org/3/${mType}/${id}/videos?api_key=${TMDB_API_KEY}&language=en-US`);
+                const enData = await enRes.json(); enVideos = enData.results || [];
+            }
+            const allVideos = [...(data.videos?.results || []), ...enVideos];
             
-            document.getElementById('library-view').style.display = 'none';
-            document.getElementById('playlists-view').style.display = 'none';
-            document.getElementById('library-controls').style.display = 'none';
-            document.getElementById('search-view').style.display = 'none';
-            document.getElementById('detail-view').style.display = 'block';
-            window.scrollTo(0, 0);
+            const trailer = allVideos.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+            if (trailer) { currentTrailerKey = trailer.key; document.getElementById('trailer-btn').style.display = 'inline-flex'; }
 
-            const recView = document.getElementById('recommendations-view');
-            recView.innerHTML = '<p style="color:var(--text-sub);">読み込み中...</p>';
-            try {
-                const recRes = await fetch(`https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=${TMDB_API_KEY}&language=ja-JP&page=1`);
-                const recData = await recRes.json();
-                recView.innerHTML = '';
-                if(recData.results.length === 0) { recView.innerHTML = '<p style="color:var(--text-sub);">データがありません。</p>'; }
-                else {
-                    recData.results.forEach(rm => {
-                        const rPost = rm.poster_path ? `https://image.tmdb.org/t/p/w200${rm.poster_path}` : 'https://via.placeholder.com/200x300?text=No+Image';
-                        const rc = document.createElement('div');
-                        rc.className = 'movie-card';
-                        rc.innerHTML = `<div class="poster-wrapper" style="margin-bottom:8px;"><img class="movie-poster" src="${rPost}"></div><p class="movie-title" style="font-size:13px;">${rm.title}</p>`;
-                        rc.onclick = () => { if(confirm(`「${rm.title}」を検索しますか？`)){ showSearch(); document.getElementById('search-input').value = rm.title; searchMovies(); } };
-                        recView.appendChild(rc);
-                    });
-                }
-            } catch(e) { recView.innerHTML = ''; }
+            const bonusVideos = allVideos.filter(v => ['Bloopers', 'Featurette', 'Behind the Scenes'].includes(v.type) && v.site === 'YouTube');
+            if (bonusVideos.length > 0) {
+                document.getElementById('bonus-section').style.display = 'block';
+                const bonusView = document.getElementById('bonus-view');
+                bonusVideos.forEach(v => {
+                    const div = document.createElement('div'); div.className = 'bonus-item';
+                    div.innerHTML = `<img src="https://img.youtube.com/vi/${v.key}/mqdefault.jpg" loading="lazy"><div class="bonus-play">PLAY</div><p class="bonus-title">${v.name}</p>`;
+                    div.onclick = () => openTrailerModal(v.key);
+                    bonusView.appendChild(div);
+                });
+            }
+
+            const recView = document.getElementById('recommendations-view'); recView.innerHTML = '';
+            if(data.recommendations?.results?.length > 0) {
+                data.recommendations.results.slice(0, 10).forEach(rm => {
+                    const rPost = rm.poster_path ? `https://image.tmdb.org/t/p/w200${rm.poster_path}` : 'https://via.placeholder.com/200x300?text=No+Image';
+                    const rc = document.createElement('div'); rc.className = 'movie-card'; rc.innerHTML = `<div class="poster-wrapper" style="margin-bottom:8px;"><img class="movie-poster" src="${rPost}" loading="lazy"></div><p class="movie-title">${rm.title || rm.name}</p>`;
+                    rc.onclick = () => { if(confirm(`Search for "${rm.title || rm.name}"?`)){ showSearch(); document.getElementById('search-input').value = rm.title || rm.name; searchMovies(); } };
+                    recView.appendChild(rc);
+                });
+            }
         };
 
-        window.searchFromLink = (personName) => { showSearch(); document.getElementById('search-input').value = personName; searchMovies(); };
+        window.openTrailerModal = (key) => { 
+            if (!key) return; 
+            document.getElementById('trailer-modal').style.display = 'flex'; 
+            document.getElementById('yt-iframe').src = `https://www.youtube.com/embed/${key}?autoplay=1`; 
+            document.getElementById('yt-fallback-link').href = `https://www.youtube.com/watch?v=${key}`;
+        };
+        window.closeTrailerModal = () => { document.getElementById('trailer-modal').style.display = 'none'; document.getElementById('yt-iframe').src = ""; };
 
         window.openPosterModal = async () => {
             document.getElementById('poster-modal').style.display = 'flex';
             const grid = document.getElementById('poster-grid');
-            grid.innerHTML = '読み込み中...';
+            grid.innerHTML = '<span style="color:#888;">Loading...</span>';
             try {
-                const res = await fetch(`https://api.themoviedb.org/3/movie/${currentMovieId}/images?api_key=${TMDB_API_KEY}`);
+                const movie = myMovies.find(m => m.id === currentMovieId);
+                const mType = movie.mediaType || 'movie';
+                const res = await fetch(`https://api.themoviedb.org/3/${mType}/${currentMovieId}/images?api_key=${TMDB_API_KEY}`);
                 const data = await res.json();
                 grid.innerHTML = '';
-                if(!data.posters || data.posters.length === 0) { grid.innerHTML = '変更できる画像がありません。'; return; }
+                if(!data.posters || data.posters.length === 0) { grid.innerHTML = '<span style="color:#888;">No alternative posters found.</span>'; return; }
                 
                 data.posters.sort((a,b) => b.vote_average - a.vote_average).slice(0, 20).forEach(p => {
                     const imgUrl = `https://image.tmdb.org/t/p/w500${p.file_path}`;
@@ -619,66 +629,30 @@
                     img.onclick = async () => {
                         await updateDoc(doc(db, "movies", String(currentMovieId)), { posterUrl: imgUrl });
                         closeModal('poster-modal');
+                        document.getElementById('detail-img').src = imgUrl; 
                     };
                     grid.appendChild(img);
                 });
-            } catch(e) { grid.innerHTML = 'エラーが発生しました。'; }
+            } catch(e) { grid.innerHTML = '<span style="color:#ff453a;">Error loading posters.</span>'; }
         };
 
-        window.openPlaylistModal = () => {
-            document.getElementById('playlist-modal').style.display = 'flex';
-            renderPlaylistModalList();
-        };
-        
-        window.createNewPlaylist = async () => {
-            const name = document.getElementById('new-pl-name').value.trim();
-            if(!name) return;
-            const id = 'pl_' + Date.now();
-            await setDoc(doc(db, "playlists", id), { id: id, name: name, createdAt: Date.now() });
-            document.getElementById('new-pl-name').value = '';
-        };
-
+        window.searchFromLink = (personName) => { showSearch(); document.getElementById('search-input').value = personName; searchMovies(); };
+        window.openPlaylistModal = () => { document.getElementById('playlist-modal').style.display = 'flex'; renderPlaylistModalList(); };
+        window.createNewPlaylist = async () => { const name = document.getElementById('new-pl-name').value.trim(); if(!name) return; const id = 'pl_' + Date.now(); await setDoc(doc(db, "playlists", id), { id: id, name: name, createdAt: Date.now() }); document.getElementById('new-pl-name').value = ''; };
         function renderPlaylistModalList() {
-            const list = document.getElementById('pl-list');
-            list.innerHTML = '';
-            const movie = myMovies.find(m => m.id === currentMovieId);
-            const mPlIds = movie.playlistIds || [];
-            
+            const list = document.getElementById('pl-list'); list.innerHTML = ''; const movie = myMovies.find(m => m.id === currentMovieId); const mPlIds = movie.playlistIds || [];
             myPlaylists.sort((a,b)=>b.createdAt - a.createdAt).forEach(pl => {
-                const label = document.createElement('label');
-                label.style.display = 'flex'; label.style.alignItems = 'center'; label.style.gap = '12px'; label.style.cursor = 'pointer'; label.style.fontSize = '15px';
-                const cb = document.createElement('input');
-                cb.type = 'checkbox';
-                cb.checked = mPlIds.includes(pl.id);
-                cb.style.width = '18px'; cb.style.height = '18px'; cb.style.accentColor = 'var(--accent-color)';
-                cb.onchange = async () => {
-                    let newIds = [...mPlIds];
-                    if(cb.checked) newIds.push(pl.id);
-                    else newIds = newIds.filter(id => id !== pl.id);
-                    await updateDoc(doc(db, "movies", String(currentMovieId)), { playlistIds: newIds });
-                };
-                label.appendChild(cb);
-                label.appendChild(document.createTextNode(pl.name));
-                list.appendChild(label);
+                const label = document.createElement('label'); label.style.display = 'flex'; label.style.alignItems = 'center'; label.style.gap = '12px'; label.style.cursor = 'pointer'; label.style.fontSize = '15px';
+                const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = mPlIds.includes(pl.id); cb.style.width = '18px'; cb.style.height = '18px'; cb.style.accentColor = 'var(--accent-white)';
+                cb.onchange = async () => { let newIds = [...mPlIds]; if(cb.checked) newIds.push(pl.id); else newIds = newIds.filter(id => id !== pl.id); await updateDoc(doc(db, "movies", String(currentMovieId)), { playlistIds: newIds }); };
+                label.appendChild(cb); label.appendChild(document.createTextNode(pl.name)); list.appendChild(label);
             });
         }
-
         window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
-        window.setRating = async (rating) => {
-            const movie = myMovies.find(m => m.id === currentMovieId);
-            await updateDoc(doc(db, "movies", String(currentMovieId)), { rating: movie.rating === rating ? null : rating });
-        };
-        window.saveReview = async () => {
-            await updateDoc(doc(db, "movies", String(currentMovieId)), { review: document.getElementById('review-text').value });
-            alert('保存しました。');
-        };
-        window.deleteMovie = async () => {
-            if (confirm('本当に削除しますか？')) {
-                await deleteDoc(doc(db, "movies", String(currentMovieId)));
-                currentMovieId = null; switchTab(currentTab);
-            }
-        };
+        window.setRating = async (rating) => { const movie = myMovies.find(m => m.id === currentMovieId); await updateDoc(doc(db, "movies", String(currentMovieId)), { rating: movie.rating === rating ? null : rating }); showDetail(currentMovieId); };
+        window.saveReview = async () => { await updateDoc(doc(db, "movies", String(currentMovieId)), { review: document.getElementById('review-text').value }); alert('Saved.'); };
+        window.deleteMovie = async () => { if (confirm('Are you sure?')) { await deleteDoc(doc(db, "movies", String(currentMovieId))); currentMovieId = null; switchTab(currentTab); } };
     </script>
 </body>
 </html>
