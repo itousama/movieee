@@ -2,9 +2,20 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <!-- ★ iPhoneのノッチ・セーフエリアに対応するための記述を追加 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>TitleTrack - My Entertainment Vault</title>
+    
+    <!-- ★ iOS Safari ネイティブアプリ化（フルスクリーン）のための設定 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TitleTrack">
+    
+    <!-- ★ ブラウザのタブ用アイコン (Favicon) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%23121212'/%3E%3Crect x='156' y='126' width='200' height='40' rx='20' fill='%23ffffff'/%3E%3Crect x='236' y='126' width='40' height='120' rx='20' fill='%23ffffff'/%3E%3Crect x='156' y='266' width='40' height='120' rx='20' fill='%231ed760'/%3E%3Cpath d='M246 276 L336 326 L246 376 Z' fill='%231ed760' stroke='%231ed760' stroke-width='20' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
+    
+    <!-- ★ iPhoneのホーム画面用アイコン (Apple Touch Icon) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23121212'/%3E%3Crect x='156' y='126' width='200' height='40' rx='20' fill='%23ffffff'/%3E%3Crect x='236' y='126' width='40' height='120' rx='20' fill='%23ffffff'/%3E%3Crect x='156' y='266' width='40' height='120' rx='20' fill='%231ed760'/%3E%3Cpath d='M246 276 L336 326 L246 376 Z' fill='%231ed760' stroke='%231ed760' stroke-width='20' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
+
     <style>
         :root { 
             --bg-base: #000000;          
@@ -14,7 +25,7 @@
             --text-sub: #98989d;         
             --accent-white: #ffffff;
             --accent-spotify: #1ed760;
-            --grid-columns: repeat(auto-fill, minmax(120px, 1fr)); /* スマホで綺麗に並ぶよう最小幅を調整 */
+            --grid-columns: repeat(auto-fill, minmax(120px, 1fr));
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-pill: 40px;
@@ -26,13 +37,12 @@
             background-color: var(--bg-base); 
             color: var(--text-main); 
             -webkit-font-smoothing: antialiased;
-            -webkit-tap-highlight-color: transparent; /* iOSでのタップ時のグレーのハイライトを消去 */
-            padding-bottom: env(safe-area-inset-bottom); /* iPhoneのホームバーに被らないようにする */
+            -webkit-tap-highlight-color: transparent; 
+            padding-bottom: env(safe-area-inset-bottom); 
         }
         
         button, input, select, textarea { font-family: inherit; }
 
-        /* ヘッダー構造をスマホ/PC両対応に改善 */
         header { 
             background-color: var(--bg-glass); 
             backdrop-filter: blur(24px) saturate(180%); 
@@ -110,7 +120,6 @@
         
         .hero-logo { max-width: 450px; max-height: 160px; object-fit: contain; margin-bottom: 16px; filter: drop-shadow(0 4px 15px rgba(0,0,0,0.8)); display: none; }
         
-        /* スマホ向けにフォントサイズを動的に変更 (clamp) */
         .detail-title { font-size: clamp(32px, 8vw, 52px); font-weight: 900; margin: 0 0 12px 0; line-height: 1.1; letter-spacing: -1px; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
         .detail-meta { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 24px; }
         .meta-dot::before { content: " • "; margin: 0 8px; opacity: 0.4; }
@@ -129,7 +138,6 @@
 
         .section-title { font-size: 20px; font-weight: 800; margin: 40px 0 20px 0; letter-spacing: -0.5px; color: var(--text-main); }
         
-        /* 横スクロール (Apple風の非表示スクロールバー) */
         .cast-scroll, .bonus-scroll, .horizontal-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 20px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .cast-scroll::-webkit-scrollbar, .bonus-scroll::-webkit-scrollbar, .horizontal-scroll::-webkit-scrollbar { display: none; }
         
@@ -155,7 +163,6 @@
         .rate-pill.active-good { background-color: var(--text-main); color: var(--bg-base); }
         .rate-pill.active-bad { background-color: #ff453a; color: #fff; }
         
-        /* ★ iOS Safari ズームバグ対策で font-size を 16px に指定 */
         textarea { width: 100%; height: 120px; background-color: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); padding: 16px; font-size: 16px; margin-bottom: 24px; outline: none; transition: 0.2s; resize: vertical; box-sizing: border-box; }
         textarea:focus { border-color: rgba(255,255,255,0.4); background-color: rgba(0,0,0,0.4); }
 
@@ -181,23 +188,17 @@
 
         #search-view { display: none; padding: 40px max(24px, env(safe-area-inset-right)) 40px max(24px, env(safe-area-inset-left)); }
         .search-input-wrapper { display: flex; width: 100%; gap: 12px; max-width: 700px; margin: 0 auto 40px auto; }
-        /* ★ 検索窓もズーム対策で16px */
         .search-input { flex: 1; padding: 18px 24px; border-radius: var(--radius-pill); border: none; background-color: var(--bg-surface); color: white; font-size: 16px; outline: none; transition: 0.2s; }
         .search-input:focus { background-color: #2c2c2e; box-shadow: 0 0 0 2px rgba(255,255,255,0.1); }
         
         .add-small-btn { background-color: rgba(255,255,255,0.1); color: white; border: none; border-radius: var(--radius-pill); padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 12px; transition: 0.2s; backdrop-filter: blur(5px); }
         .add-small-btn:hover { background-color: var(--text-main); color: var(--bg-base); }
 
-
-        /* =========================================
-           📱 スマートフォン向け (iPhone等) 徹底最適化レイアウト
-        ========================================= */
         @media (max-width: 768px) {
             header { flex-direction: column; align-items: stretch; gap: 16px; padding: max(16px, env(safe-area-inset-top)) 16px 12px; }
             .header-top-row { width: 100%; gap: 12px; }
             .header-bottom-row { margin-left: 0; width: 100%; overflow: hidden; }
             
-            /* タブを横スクロール可能に */
             .nav-pills { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px; }
             .nav-pills::-webkit-scrollbar { display: none; }
             .nav-btn { white-space: nowrap; }
@@ -209,17 +210,14 @@
             
             .grid-view { padding: 16px 16px 40px 16px; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 20px 12px; }
             
-            /* 詳細画面スマホ対応 */
             .detail-inner { padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); }
             .detail-header { flex-direction: column; align-items: center; text-align: center; margin-top: 5vh; gap: 24px; }
             .detail-poster-container { flex: 0 0 auto; width: 50%; min-width: 140px; max-width: 200px; }
             .hero-logo { max-width: 90%; max-height: 100px; margin: 0 auto 16px auto; }
             
-            /* ボタンをスマホ用にフル幅縦積み */
             .main-actions { flex-direction: column; width: 100%; gap: 12px; }
             .play-trailer-btn, .icon-btn { width: 100%; justify-content: center; box-sizing: border-box; }
             
-            /* スクロールエリアを画面端まで広げる（Apple風エッジツーエッジ） */
             .cast-scroll, .bonus-scroll, .horizontal-scroll { margin: 0 -16px; padding: 0 16px 20px 16px; }
             
             .editor-section { padding: 24px 16px; margin-top: 32px; }
@@ -236,7 +234,6 @@
             <h1 onclick="switchTab('movie')">TitleTrack</h1>
             <div class="header-controls">
                 <label class="toggle-switch"><input type="checkbox" id="lang-toggle" onchange="renderCurrentView()"> 原題</label>
-                <!-- スマホでは列数変更メニューを非表示にしスッキリさせる -->
                 <select id="column-select" class="secondary-btn desktop-only" style="padding: 6px 12px;" onchange="handleColumnChange()">
                     <option value="auto">Grid: Auto</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>
                 </select>
@@ -301,7 +298,7 @@
                     <div id="detail-meta" class="detail-meta"></div>
                     
                     <div class="main-actions">
-                        <button id="trailer-btn" class="play-trailer-btn" style="display:none;" onclick="openTrailerModal(currentTrailerKey)">▶ Play Trailer</button>
+                        <button id="trailer-btn" class="play-trailer-btn" style="display:none;" onclick="openTrailerModal(currentTrailerKey)">Play Trailer</button>
                         <a id="spotify-link" href="#" target="_blank" class="icon-btn">Soundtrack</a>
                         <button class="icon-btn" onclick="openPlaylistModal()">Add to Playlist</button>
                     </div>
@@ -409,7 +406,6 @@
 
         window.renderCurrentView = () => { if (currentTab === 'playlists') renderPlaylists(); else renderLibrary(); };
         
-        // スマホではこの関数は呼ばれませんがPC用に残しておきます
         window.handleColumnChange = () => { const cols = document.getElementById('column-select').value; document.documentElement.style.setProperty('--grid-columns', cols === 'auto' ? 'repeat(auto-fill, minmax(120px, 1fr))' : `repeat(${cols}, 1fr)`); };
 
         window.renderLibrary = (filterPlaylistId = null) => {
